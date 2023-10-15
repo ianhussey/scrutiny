@@ -1,6 +1,6 @@
 # Scrutiny
 
-This is a collection of tools for scrutinising the results of articles and preprints. 
+This is a collection of tools for scrutinising the results of articles and preprints. References and web apps are provided for each below. A working R script is provided for each in the `code` directory.
 
 
 
@@ -13,6 +13,8 @@ This is a collection of tools for scrutinising the results of articles and prepr
 
 
 ### Statcheck
+
+For assessing whether reported test statistics, degrees of freedom, and *p* values are mathmathically congruent with one another, and therefore useful for detecting reporting errors.  
 
 #### Webapp
 
@@ -31,6 +33,8 @@ Nuijten, M. B., Hartgerink, C. H., Van Assen, M. A., Epskamp, S., & Wicherts, J.
 
 
 ### GRIM & GRIMMER
+
+For assessing whether reported means and standard deviations (and indeed standard errors and variances) are mathmathically possible, and therefore useful for detecting reporting errors.  
 
 #### Webapp
 
@@ -54,6 +58,8 @@ Anaya J. (2016) The GRIMMER test: A method for testing the validity of reported 
 
 ### SPRITE
 
+For reconstructing datasets that have the same summary statistics (M, SD, N) and constraints (e.g., range constraints) as those reported in articles, in order to assess the plausibility of those original datasets and summary statistics.
+
 #### **Webapp** 
 
 https://steamtraen.shinyapps.io/rsprite/ 
@@ -66,11 +72,15 @@ https://steamtraen.shinyapps.io/rsprite/
 
 Heathers, J. A., Anaya, J., van der Zee, T., Brown, N. J. L. (2018). Recovering data from summary statistics: Sample Parameter Reconstruction via Iterative TEchniques (SPRITE). PeerJ. https://doi.org/10.7287/peerj.preprints.26968v1
 
+Heathers, J. A. (2018). Introducing SPRITE (and the Case of the Carthorse Child). https://medium.com/hackernoon/introducing-sprite-and-the-case-of-the-carthorse-child-58683c2bfeb 
+
 
 
 ## Tools to be added
 
 ### *p*-curve
+
+For assessing the credibility of p values within a given literature.
 
 #### Webapp
 
@@ -78,7 +88,7 @@ https://www.p-curve.com/app4/
 
 #### R package
 
-[dmetar](https://dmetar.protectlab.org/) (see also Harrer chapter below).
+[dmetar](https://dmetar.protectlab.org/) (see Harrer chapter below)
 
 #### References
 
@@ -94,13 +104,37 @@ Erdfelder & Heck (2019) Detecting Evidential Value and p-Hacking With the p-Curv
 
 ### *Z*-curve
 
+For assessing the credibility of p values within a given literature. Argued to have advantages over *p*-curve, but is also more complex (both in its inner workings and to interpret the output of). 
+
 #### Webapp
 
-[to be added]
+https://shinyapps.org/apps/p-checker/ (see the Excess Significance tab, although note this only produces some of Z-curve's metrics and not its plot)
 
 #### R package
 
-[to be added]
+[zcurve](https://cran.r-project.org/web/packages/zcurve/index.html)
+
+#### References
+
+Bartoš, F., & Schimmack, U. (2022) Z-curve 2.0: Estimating Replication Rates and Discovery Rates. *Meta-psychology*, 6. https://doi.org/10.15626/MP.2021.2720 
+
+
+
+### WebPlotDigitiser
+
+For extracting data from plots.
+
+#### Webapp
+
+https://automeris.io/WebPlotDigitizer/ (also has local apps for Windows, Mac OS and Linux)
+
+#### R package
+
+[digitizeR](https://github.com/ankitrohatgi/digitizeR) (note that this package is only available on GitHub, not CRAN. It provides an R interface for the underlying original WebPlotDigitiser, which is written in JavaScript I think)
+
+#### References
+
+See website for tutorials: https://automeris.io/WebPlotDigitizer/tutorial.html
 
 
 
