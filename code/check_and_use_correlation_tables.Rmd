@@ -1,0 +1,253 @@
+---
+title: "Assess whether correlation tables are internally consistent, and reconstruct regression analyses from correlation matrices"
+author: "Ian Hussey"
+output:
+  html_document:
+    code_folding: hide
+    highlight: haddock
+    theme: flatly
+    toc: yes
+    toc_float: yes
+---
+
+IN DEVELOPMENT - NOT RECOMMENDED FOR USE
+ 
+```{r include=FALSE}
+
+# formatting options
+# set default chunk options
+knitr::opts_chunk$set(message = FALSE, 
+                      warning = FALSE)
+
+# disable scientific notation
+options(scipen = 999) 
+
+```
+
+```{r}
+
+# dependencies
+library(lavaan)
+library(janitor)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(Matrix)
+
+```
+
+# Simple way to calculate variance-covariance matricies and means vectors
+
+```{r}
+
+mtcars |>
+  cor(use = "pairwise.complete.obs",
+      method = "pearson") |>
+  round(2)
+
+a <- mtcars |>
+  cov(use = "everything",
+      method = "pearson")
+
+cov2cor(a) |>
+  round(2)
+
+colMeans(mtcars) |>
+  round(2)
+
+```
+
+# Correlation consistency
+
+Given three correlations calculated within a given sample using use = "all", assess whether the third correlation is possible given the first two.
+
+```{r}
+
+correlation_consistency <- function(r_XY, r_XZ, r_YZ){
+  # Since X, Y, and Z are z-scored vectors, the correlation coefficient between any pair is the cosine similarity.
+  lower_bound <- cos(acos(r_XY) + acos(r_XZ))
+  upper_bound <- cos(abs(acos(r_XY) - acos(r_XZ)))
+  
+  # correlations are bounded [-1, +1], so correct impossible results
+  lower_bound <- ifelse(lower_bound < -1, -1, 
+                        ifelse(lower_bound > +1, +1, lower_bound))
+  
+  upper_bound <- ifelse(upper_bound < -1, -1, 
+                        ifelse(upper_bound > +1, +1, upper_bound))
+  
+  res <- data.frame(r_XY = r_XY,
+                    r_XZ = r_XZ,
+                    r_YZ = r_YZ,
+                    r_YZ_lower_bound = lower_bound,
+                    r_YZ_upper_bound = upper_bound) |>
+    mutate(consistent = ifelse(r_YZ > r_YZ_lower_bound & r_YZ < r_YZ_upper_bound, TRUE, FALSE))
+  
+  return(res)
+}
+
+correlation_consistency(r_XY = .70, r_XZ = .80, r_YZ = .10)
+
+```
+
+# Convert a full cor matrix into a lower triangle (e.g., for reporting)
+
+```{r}
+
+cor_matrix_to_lower_triangle <- function(cor_matrix){
+  cor_matrix[upper.tri(cor_matrix, diag = TRUE)] <- NA
+  return(cor_matrix)
+}
+
+mat <- cor(mtcars)
+
+cor_matrix_to_lower_triangle(mat) |>
+  round(2)
+
+```
+
+# convert an upper or lower triangle of correlations (e.g., as reported in an article) into a full cor matrix
+
+```{r}
+
+triangle_to_cor_matrix <- function(triangle){
+  
+  library(tibble)
+  
+  # if input is a df or tibble, convert to matrix
+  if(is.data.frame(triangle) | is_tibble(triangle)){
+    triangle <- as.matrix(triangle)
+  } 
+  if(!is.matrix(triangle)){
+    stop("Input must be a matrix, data frame, or tibble")
+  }
+  
+  # assess if the triangle is an upper triangle. I.e., are all the lower tri values NA and all the upper tri values non-NA? If so, transpose the matrix to make it a lower triangle. 
+  if(all(is.na(triangle[lower.tri(triangle)])) &
+     all(!is.na(triangle[upper.tri(triangle)]))){
+    triangle <- t(triangle)
+  }
+  
+  # create an empty matrix of the same dimension as 'triangle' to hold the mirrored values
+  mirror_matrix <- matrix(0, nrow = nrow(triangle), ncol = ncol(triangle))
+  
+  # assign the lower triangle of 'mirror_matrix' with the lower triangle of 'triangle'
+  mirror_matrix[lower.tri(mirror_matrix)] <- triangle[lower.tri(triangle)]
+  
+  # add the transposed 'mirror_matrix' to itself to complete the mirroring process
+  full_matrix <- mirror_matrix + t(mirror_matrix) - diag(nrow(triangle))
+  
+  # fill diagonal with 1s
+  diag(full_matrix) <- 1
+  
+  return(full_matrix)
+}
+
+# can handle lower triangles
+mat <- cor_matrix_to_lower_triangle(cor(mtcars)) |> round(2)
+mat
+triangle_to_cor_matrix(mat)
+
+# and upper triangles
+mat <- t(cor_matrix_to_lower_triangle(cor(mtcars))) |> round(2)
+mat
+triangle_to_cor_matrix(mat)
+
+```
+
+## Alt method using lavaan::getCov()?
+
+NB can this be done much more easily with lavaan::getCov()?
+
+```{r}
+
+# for example
+lavaan::getCov(x = c(
+    1.00,  0.32,  0.34, -0.09,  0.21,  0.30, 
+           1.00,  0.45, -0.54,  0.54,  0.64,
+                  1.00, -0.26,  0.32,  0.34, 
+                         1.00, -0.52, -0.49, 
+                                1.00,  0.50,
+                                       1.00
+  ),
+  lower = FALSE,
+  diagonal = TRUE, 
+  )
+
+```
+
+# Positive definiteness
+
+Is a correlation matrix of arbitrary size internally consistent?
+
+Assumes no missingness/listwise deletions, and missingness and deletion method may or may not have been fully reported.
+
+```{r}
+
+positive_definite <- function(cor_matrix){
+  all(eigen(cor_matrix)$values > 0)
+}
+
+mat <- cor(mtcars)
+positive_definite(mat)
+
+```
+
+# Inspect distribution of eigenvalues
+
+```{r}
+
+library(ggplot2)
+
+dat <- data.frame(eigenvalues = eigen(mat)$values)
+
+ggplot(dat, aes(eigenvalues)) +
+  geom_histogram(closed = "right", boundary = 0) +
+  geom_vline(xintercept = 0, linetype = "dashed")
+
+```
+
+# Find nearest positive definite matrix
+
+```{r}
+
+correlation <- 
+  lavaan::getCov(x = c(
+    1.00,  0.32,  0.34, -0.09,  0.21, -0.90, # NB it is only this -.90 value that was changed from the original .30, a change of -1.20
+           1.00,  0.45, -0.54,  0.54,  0.64,
+                  1.00, -0.26,  0.32,  0.34, 
+                         1.00, -0.52, -0.49, 
+                                1.00,  0.50,
+                                       1.00
+  ),
+  lower = FALSE,
+  diagonal = TRUE, 
+  )
+
+# assess if PD
+positive_definite(correlation)
+
+# new PD matrix
+nearest_positive_definite <- function(cor_matrix){
+  Matrix::nearPD(cor_matrix, corr = TRUE)$mat
+}
+
+corrected_correlation <- nearest_positive_definite(correlation)
+ 
+# assess if PD
+positive_definite(corrected_correlation)
+
+# print
+corrected_correlation |>
+  round_half_up(2)
+
+# diff between original and corrected
+correlation - nearest_positive_definite(correlation) |>
+  round_half_up(2) |>
+  cor_matrix_to_lower_triangle() |>
+  t()
+
+```
+
+
+
+
