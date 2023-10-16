@@ -68,6 +68,8 @@ https://steamtraen.shinyapps.io/rsprite/
 
 [rsprite2](https://cran.r-project.org/web/packages/rsprite2)
 
+possibly also [scrutiny](https://cran.r-project.org/web/packages/scrutiny)?
+
 #### References
 
 Heathers, J. A., Anaya, J., van der Zee, T., Brown, N. J. L. (2018). Recovering data from summary statistics: Sample Parameter Reconstruction via Iterative TEchniques (SPRITE). PeerJ. https://doi.org/10.7287/peerj.preprints.26968v1
@@ -137,6 +139,58 @@ https://automeris.io/WebPlotDigitizer/ (also has local apps for Windows, Mac OS 
 See website for tutorials: https://automeris.io/WebPlotDigitizer/tutorial.html
 
 
+
+### DEBIT
+
+A Simple Consistency Test For Binary Data
+
+#### Webapp
+
+[to be added]
+
+#### R package
+
+[scrutiny](https://cran.r-project.org/web/packages/scrutiny)
+
+#### References
+
+Heathers & Brown (2019) DEBIT: A Simple Consistency Test For Binary Data. https://osf.io/5vb3u
+
+
+
+### RIVETS
+
+Rounded Input Variables, Exact Test Statistics: A Technique For Detecting Hand-Calculated Results in Published Research.
+
+#### Webapp
+
+[to be added]
+
+#### R package
+
+[to be added]
+
+#### References
+
+Brown & Heathers (2019) Rounded Input Variables, Exact Test Statistics (RIVETS): A Technique For Detecting Hand-Calculated Results in Published Research. https://doi.org/10.31234/osf.io/ctu9z 
+
+
+
+### RECOVAR (REuse COrrelations for Validation And Regression)
+
+Check correlation tables for consistency and (re)create regression analyses using correlation tables as input rather than the participant level data 
+
+#### Webapp
+
+[under construction]
+
+#### R package
+
+[under construction]
+
+#### References
+
+[under construction]
 
 
 
