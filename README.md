@@ -1,6 +1,6 @@
 # Scrutiny
 
-This is a collection of tools for scrutinising the results of articles and preprints. References and web apps are provided for each below. A working R script is provided for each in the `code` directory.
+This is a collection of tools for scrutinising the results of articles and preprints. References and web apps are provided for each below. Working examples are provided for each in the `vignettes` directory.
 
 
 
@@ -75,6 +75,24 @@ possibly also [scrutiny](https://cran.r-project.org/web/packages/scrutiny)?
 Heathers, J. A., Anaya, J., van der Zee, T., Brown, N. J. L. (2018). Recovering data from summary statistics: Sample Parameter Reconstruction via Iterative TEchniques (SPRITE). PeerJ. https://doi.org/10.7287/peerj.preprints.26968v1
 
 Heathers, J. A. (2018). Introducing SPRITE (and the Case of the Carthorse Child). https://medium.com/hackernoon/introducing-sprite-and-the-case-of-the-carthorse-child-58683c2bfeb 
+
+
+
+### Recalculate effect sizes and p values for between subjects designs from summary stats
+
+Recalculate Cohen's d or Hedges' g effect sizes, independent t-tests, 1-way or 2-way between subjects ANOVAs from summary statistics (M, SD, and N per cell). 
+
+#### **Webapp** 
+
+NA
+
+#### R package
+
+[under construction, see vignettes for working examples]
+
+#### References
+
+[under construction]
 
 
 
